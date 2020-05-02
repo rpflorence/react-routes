@@ -22,6 +22,7 @@ import {
   useParams,
   useResolvedLocation,
   useRoutes,
+  useRouteMatch,
   // utils
   createRoutesFromChildren,
   matchRoutes,
@@ -54,6 +55,7 @@ export {
   useParams,
   useResolvedLocation,
   useRoutes,
+  useRouteMatch,
   // utils
   createRoutesFromChildren,
   matchRoutes,
