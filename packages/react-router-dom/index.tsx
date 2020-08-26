@@ -89,29 +89,29 @@ export {
 /**
  * A <Router> for use in web browsers. Provides the cleanest URLs.
  */
-export function BrowserRouter({ children, window }: BrowserRouterProps) {
+export function BrowserRouter({ children, history, window }: BrowserRouterProps) {
   let historyRef = React.useRef<BrowserHistory>();
   if (historyRef.current == null) {
-    historyRef.current = createBrowserHistory({ window });
+    historyRef.current = history || createBrowserHistory({ window });
   }
 
-  let history = historyRef.current;
+  let historyObj = historyRef.current;
   let [state, dispatch] = React.useReducer(
     (_: Update, action: Update) => action,
     {
-      action: history.action,
-      location: history.location
+      action: historyObj.action,
+      location: historyObj.location
     }
   );
 
-  React.useLayoutEffect(() => history.listen(dispatch), [history]);
+  React.useLayoutEffect(() => historyObj.listen(dispatch), [historyObj]);
 
   return (
     <Router
       children={children}
       action={state.action}
       location={state.location}
-      navigator={history}
+      navigator={historyObj}
     />
   );
 }
@@ -119,6 +119,7 @@ export function BrowserRouter({ children, window }: BrowserRouterProps) {
 export interface BrowserRouterProps {
   children?: React.ReactNode;
   window?: Window;
+  history?: BrowserHistory
 }
 
 if (__DEV__) {
