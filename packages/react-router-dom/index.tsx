@@ -173,6 +173,43 @@ if (__DEV__) {
   };
 }
 
+/**
+ * A <Router> for use in web browsers with custom history. Provides the cleanest URLs.
+ */
+export function HistoryRouter({ children, history }: HistoryRouterProps) {
+  let [state, dispatch] = React.useReducer(
+      (_: Update, action: Update) => action,
+      {
+        action: history.action,
+        location: history.location
+      }
+  );
+
+  React.useLayoutEffect(() => history.listen(dispatch), [history]);
+
+  return (
+      <Router
+          children={children}
+          action={state.action}
+          location={state.location}
+          navigator={history}
+      />
+  );
+}
+
+export interface HistoryRouterProps {
+  children?: React.ReactNode;
+  history: BrowserHistory;
+}
+
+if (__DEV__) {
+  HistoryRouter.displayName = 'HistoryRouter';
+  HistoryRouter.propTypes = {
+    children: PropTypes.node,
+    history: PropTypes.object
+  };
+}
+
 function isModifiedEvent(event: React.MouseEvent) {
   return !!(event.metaKey || event.altKey || event.ctrlKey || event.shiftKey);
 }
