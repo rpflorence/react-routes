@@ -149,32 +149,16 @@ export function HashRouter({ children, window }: HashRouterProps) {
   );
 }
 
-export interface HashRouterProps {
-  children?: React.ReactNode;
-  window?: Window;
-}
-
-if (__DEV__) {
-  HashRouter.displayName = 'HashRouter';
-  HashRouter.propTypes = {
-    children: PropTypes.node,
-    window: PropTypes.object
-  };
-}
-
 /**
  * A <Router> for use in web browsers with custom history. Provides the cleanest URLs.
  */
 export function HistoryRouter({ children, history }: HistoryRouterProps) {
-  let [state, dispatch] = React.useReducer(
-      (_: Update, action: Update) => action,
-      {
-        action: history.action,
-        location: history.location
-      }
-  );
+  let [state, setState] = React.useState({
+    action: history.action,
+    location: history.location
+  });
 
-  React.useLayoutEffect(() => history.listen(dispatch), [history]);
+  React.useLayoutEffect(() => history.listen(setState), [history]);
 
   return (
       <Router
@@ -189,14 +173,6 @@ export function HistoryRouter({ children, history }: HistoryRouterProps) {
 export interface HistoryRouterProps {
   children?: React.ReactNode;
   history: BrowserHistory;
-}
-
-if (__DEV__) {
-  HistoryRouter.displayName = 'HistoryRouter';
-  HistoryRouter.propTypes = {
-    children: PropTypes.node,
-    history: PropTypes.object
-  };
 }
 
 function isModifiedEvent(event: React.MouseEvent) {
