@@ -576,3 +576,58 @@ describe("A <Route>", () => {
     });
   });
 });
+
+describe("A partial <Route>", () => {
+  it("joins with root (/) when there is no parent match", () => {
+    const TEXT = "uncle";
+    const node = document.createElement("div");
+
+    ReactDOM.render(
+      <MemoryRouter initialEntries={["/uncle"]}>
+        <Route path="uncle" render={() => <h1>{TEXT}</h1>} />
+      </MemoryRouter>,
+      node
+    );
+
+    expect(node.innerHTML).toContain(TEXT);
+  });
+
+  it("joins its path with parent match", () => {
+    const TEXT = "cousin";
+    const node = document.createElement("div");
+
+    ReactDOM.render(
+      <MemoryRouter initialEntries={["/uncle/cousin"]}>
+        <Route
+          path="uncle"
+          render={() => <Route path="cousin" render={() => <h1>{TEXT}</h1>} />}
+        />
+      </MemoryRouter>,
+      node
+    );
+
+    expect(node.innerHTML).toContain(TEXT);
+  });
+
+  it("matches against an array of paths", () => {
+    const TEXT = "Hello World";
+    const node = document.createElement("div");
+
+    ReactDOM.render(
+      <MemoryRouter initialEntries={["/hello/world"]}>
+        <Route
+          path="hello"
+          render={() => (
+            <Route
+              path={["world", "everybody"]}
+              render={() => <div>{TEXT}</div>}
+            />
+          )}
+        />
+      </MemoryRouter>,
+      node
+    );
+
+    expect(node.innerHTML).toContain(TEXT);
+  });
+});

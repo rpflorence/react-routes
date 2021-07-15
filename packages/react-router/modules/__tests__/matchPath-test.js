@@ -22,7 +22,7 @@ describe("matchPath", () => {
       const path = "";
       const pathname = "/somewhere/else";
       const match = matchPath(pathname, path);
-      expect(match.url).toBe("");
+      expect(match.url).toBe("/");
     });
   });
 
@@ -113,6 +113,63 @@ describe("matchPath", () => {
       const pathname = "/somewhere";
       const match = matchPath(pathname, options);
       expect(match).toBe(null);
+    });
+  });
+
+  describe("with relative path (no leading slash)", () => {
+    it("returns correct match url and params with no parent", () => {
+      const pathname = "/7";
+      const options = {
+        path: ":number"
+      };
+      const match = matchPath(pathname, options, null);
+      expect(match.url).toBe("/7");
+      expect(match.params).toEqual({ number: "7" });
+    });
+
+    it("returns correct match url and params with parent", () => {
+      const pathname = "/test-location/7";
+      const options = {
+        path: ":number"
+      };
+      const base = "/test-location";
+
+      const match = matchPath(pathname, options, base);
+      expect(match.url).toBe("/test-location/7");
+      expect(match.params).toEqual({ number: "7" });
+    });
+
+    it("passes along parent match params", () => {
+      const pathname = "/test-location/hello/7";
+      const options = {
+        path: ":number"
+      };
+      const base = "/test-location/:something";
+      const match = matchPath(pathname, options, base);
+      expect(match.url).toBe("/test-location/hello/7");
+      expect(match.params).toEqual({ something: "hello", number: "7" });
+    });
+
+    it("resolves relative path with leading ./", () => {
+      const pathname = "/sauce/sriracha";
+      const options = {
+        path: "./sriracha"
+      };
+      const base = "/sauce";
+
+      const match = matchPath(pathname, options, base);
+      expect(match.url).toBe("/sauce/sriracha");
+    });
+
+    it("throws an error for relative path with leading ..", () => {
+      const pathname = "/sauce/sriracha";
+      const options = {
+        path: "../tobasco"
+      };
+
+      expect(() => {
+        matchPath(pathname, options);
+      }).toThrow(/cannot resolve pathname/);
     });
   });
 

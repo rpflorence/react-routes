@@ -53,8 +53,9 @@ const NavLink = forwardRef(
           );
           const { pathname: path } = toLocation;
           // Regex taken from: https://github.com/pillarjs/path-to-regexp/blob/master/index.js#L202
+          // but without escaping of slashes and dots
           const escapedPath =
-            path && path.replace(/([.+*?=^!:${}()[\]|/\\])/g, "\\$1");
+            path && path.replace(/([+*?=^!:${}()[\]|\\])/g, "\\$1");
 
           const match = escapedPath
             ? matchPath(currentLocation.pathname, {
